@@ -28,6 +28,13 @@ start_listener((event) => {
 });
 ```
 
+## Tested Node Versions
+
+The following Node.js versions have been tested with this module:
+
+- Node.js 20
+- Electron 30
+
 ## Platforms Supported
 
 The following platforms are supported:
