@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "node version of rdev",
   "main": "index.js",
-  "repository": "git@github.com:napi-rs/package-template.git",
+  "repository": "https://github.com/Barrierml/node-rdev",
   "license": "MIT",
   "keywords": [
     "napi-rs",
@@ -11,11 +11,17 @@
     "N-API",
     "Rust",
     "node-addon",
-    "node-addon-api"
+    "node-addon-api",
+    "node-rdev",
+    "rdev"
   ],
   "files": [
     "index.d.ts",
-    "index.js"
+    "index.js",
+    "node-rdev.darwin-arm64.node",
+    "node-rdev.darwin-x64.node",
+    "node-rdev.win32-x64-msvc.node",
+    "node-rdev.win32-arm64-msvc.node"
   ],
   "napi": {
     "name": "node-rdev",
