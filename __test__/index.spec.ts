@@ -1,8 +1,14 @@
 import test from 'ava'
 
-import { plus100 } from '../index'
+import { startListener } from '../index'
 
 test('sync function from native code', (t) => {
-  const fixture = 42
-  t.is(plus100(fixture), fixture + 100)
+  t.pass()
+  console.log(1233333)
+  startListener((data) => {
+    const dd = JSON.parse(data)
+    dd.data = JSON.parse(dd.data)
+    console.log('123', dd)
+  })
+  console.log(1232222)
 })
