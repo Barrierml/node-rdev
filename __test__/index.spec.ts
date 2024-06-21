@@ -7,5 +7,6 @@ test('sync function from native code', (t) => {
   startListener((data) => {
     const dd = JSON.parse(data)
     dd.data = JSON.parse(dd.data)
+    console.log(dd)
   })
 })

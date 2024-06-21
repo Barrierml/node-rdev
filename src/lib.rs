@@ -5,7 +5,7 @@ use napi::{JsFunction, Result};
 use rdev::{listen, EventType, Event};
 use serde_json::{self, json};
 use serde::Serialize;
-use std::thread;
+use std::thread::spawn;
 use napi::threadsafe_function::{ThreadsafeFunction, ErrorStrategy, ThreadsafeFunctionCallMode};
 
 #[derive(Serialize)]
@@ -67,25 +67,20 @@ fn deal_event_to_json(event: Event) -> RdevEvent {
     jsonify_event
 }
 
-#[napi]
-pub fn start_listener(callback: JsFunction) -> Result<()> {
-  let tsfn: ThreadsafeFunction<String, ErrorStrategy::Fatal> = callback
-    .create_threadsafe_function(0, |ctx| {
-      let value = ctx.value;
-      ctx.env.create_string_from_std(value).map(|v| vec![v])
-    })?;
-
-  thread::spawn(move || {
-    if let Err(error) = listen(move |event| {
-      let tsfn: ThreadsafeFunction<String, ErrorStrategy::Fatal> = tsfn.clone();
-      let jsonify_event: RdevEvent = deal_event_to_json(event);
-      // 转换成 JSON 格式
-      let event_str: String = serde_json::to_string(&jsonify_event).unwrap();
-      tsfn.call(event_str, ThreadsafeFunctionCallMode::Blocking);
-    }) {
-      eprintln!("Error: {:?}", error);
-    }
-  });
-
+#[napi(ts_args_type = "callback: (event: string) => void")]
+pub fn startListener(callback: JsFunction) -> Result<()> {
+    let jsfn: ThreadsafeFunction<String, ErrorStrategy::Fatal> =
+        callback.create_threadsafe_function(0, |ctx| Ok(vec![ctx.value]))?;
+    spawn(|| {
+        if let Err(error) = listen(move |event| {
+            let event = deal_event_to_json(event);
+            jsfn.call(
+                serde_json::to_string(&event).unwrap(),
+                ThreadsafeFunctionCallMode::NonBlocking,
+            );
+        }) {
+            println!("Error: {:?}", error);
+        }
+    });
     Ok(())
 }
